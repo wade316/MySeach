@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.mysearch.API.Document
@@ -96,6 +97,9 @@ class HomeFragment : Fragment() {
             if (seach.isNotEmpty()) {
                 (activity as? MainActivity)?.savePrefs(requireContext(), seach)
             }
+            //검색버튼 눌렀을때 키보드 숨기기
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(binding.editSeach.windowToken, 0)
         }
         binding.list.adapter = adapter //ListAdapter 만들때
     }
