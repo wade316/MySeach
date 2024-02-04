@@ -1,17 +1,17 @@
 package com.example.mysearch.recyclerview
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mysearch.API.Document
+import com.example.mysearch.MainActivity.Util.getDateTimeFormat
 import com.example.mysearch.databinding.ItemBinding
 
-class HomeListAdapter() :
+class HomeListAdapter :
 //class Adapter(val mitems: List<Document>) : RecyclerView.Adapter<Adapter.ItemViewHolder>() {
 
     ListAdapter<Document, HomeListAdapter.ItemViewHolder>(object :
@@ -29,7 +29,7 @@ class HomeListAdapter() :
     }) {
 
     interface ItemClick {
-        fun onClick(view: View, position: Int)
+        fun onClick(item:Document)
     }
 
     var itemClick: ItemClick? = null
@@ -43,10 +43,19 @@ class HomeListAdapter() :
     }
 
     override fun onBindViewHolder(holder: HomeListAdapter.ItemViewHolder, position: Int) {
-        holder.itemView.setOnClickListener {  //
-            itemClick?.onClick(it, position)  //
+        val item = getItem(position)
+        holder.itemView.setOnClickListener {
+            //클릭했을때 아이콘이 있는지 없는지 체크하고 아이콘을 상태에 맞춰 띄운다
+            holder.favoriteIcon.isVisible = !item.favorite //홀더에 아이콘이 visivle인지 확인하고 클릭시 boolean반대값을 적용
+            item.favorite = !item.favorite //클릭시 boolean 값변경
+            itemClick?.onClick(item)  //
         }
-        holder.bind(getItem(position))  //RecyclerView에 리스트 띄우기
+        holder.bind(item)  //RecyclerView에 리스트 띄우기
+        //datetime Formet 바꾸기
+        holder.time.text = getDateTimeFormat(
+            item.datetime,
+            "yyyy-MM-dd'T'HH:mm:ss.SSS+09:00",
+            "yyyy-MM-dd HH:mm:ss")
     }
 
 
@@ -54,7 +63,7 @@ class HomeListAdapter() :
     inner class ItemViewHolder(private val binding: ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val imageview = binding.ivImage
-
+        val favoriteIcon = binding.ivFavorite
         val title = binding.tvTitle
         val time = binding.tvTime
         fun bind(document: Document) {
@@ -64,6 +73,8 @@ class HomeListAdapter() :
                 .into(imageview)
             title.text = document.display_sitename
             time.text = document.datetime
+            //클릭했을때 아이콘이 없으면 생성
+            favoriteIcon.isVisible = document.favorite //visivle상태 확인하고 꺼져있으면 false,켜져있으면 true
         }
     }
 

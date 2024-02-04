@@ -18,7 +18,6 @@ data class Document(
     val image_url: String,
     val thumbnail_url: String,
     val width: Int,
-    val bookmark: Boolean = false
+    var favorite: Boolean = false
 )
-
 
